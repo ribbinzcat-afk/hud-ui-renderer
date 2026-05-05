@@ -5,18 +5,37 @@ import { saveSettingsDebounced, eventSource, event_types } from "../../../../scr
 const extensionName = "hud-ui-renderer";
 const extensionFolderPath = `scripts/extensions/third-party/${extensionName}`;
 
+// เพิ่ม accentColor ในค่าเริ่มต้น
 const defaultSettings = {
-    enabled: true
+    enabled: true,
+    accentColor: "#4da6ff"
 };
+
+// ฟังก์ชันแปลงโค้ดสี Hex เป็น RGB เพื่อใช้กับ rgba() ใน CSS
+function hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : "77, 166, 255";
+}
+
+// ฟังก์ชันอัปเดตตัวแปรสีใน CSS
+function applyAccentColor(hexColor) {
+    const rgbColor = hexToRgb(hexColor);
+    document.documentElement.style.setProperty('--hud-accent', hexColor);
+    document.documentElement.style.setProperty('--hud-accent-rgb', rgbColor);
+}
 
 async function loadSettings() {
     extension_settings[extensionName] = extension_settings[extensionName] || {};
-
     if (Object.keys(extension_settings[extensionName]).length === 0) {
         Object.assign(extension_settings[extensionName], defaultSettings);
     }
 
+    // โหลดค่า Checkbox และ Color
     $("#hud_ui_enabled").prop("checked", extension_settings[extensionName].enabled);
+
+    const savedColor = extension_settings[extensionName].accentColor || defaultSettings.accentColor;
+    $("#hud_ui_color").val(savedColor);
+    applyAccentColor(savedColor);
 }
 
 function onCheckboxChange(event) {
@@ -24,6 +43,14 @@ function onCheckboxChange(event) {
     extension_settings[extensionName].enabled = value;
     saveSettingsDebounced();
     console.log(`[${extensionName}] Setting saved:`, value);
+}
+
+// ฟังก์ชันเมื่อมีการเปลี่ยนสี
+function onColorChange(event) {
+    const color = $(event.target).val();
+    extension_settings[extensionName].accentColor = color;
+    applyAccentColor(color);
+    saveSettingsDebounced();
 }
 
 function renderHUD() {
