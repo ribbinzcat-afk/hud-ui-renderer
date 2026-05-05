@@ -58,15 +58,43 @@ function renderHUD() {
 
     $(".mes_text").each(function () {
         let html = $(this).html();
+        let newHtml = html; // ใช้ตัวแปรนี้เพื่อเก็บการเปลี่ยนแปลงทั้งหมด
 
-        if (html.includes("[HUD_UI]")) {
+        // 1. ดักจับ [HUD_INDICATOR] สำหรับแถบบริบทด้านบน
+        if (newHtml.includes("[HUD_INDICATOR]")) {
+            const indRegex = /\[HUD_INDICATOR\]([\s\S]*?)\[\/HUD_INDICATOR\]/g;
+            newHtml = newHtml.replace(indRegex, (match, innerText) => {
+                const content = innerText.replace(/<br\s*\/?>/gi, '').trim();
+                const items = content.split('|').map(item => item.trim()).filter(item => item.length > 0);
+
+                let indHtml = `<div class="hud-indicator-container">`;
+                items.forEach(item => {
+                    const parts = item.split(':');
+                    const key = parts[0] ? parts[0].trim() : '';
+                    const value = parts.slice(1).join(':').trim();
+
+                    if (value) {
+                        indHtml += `<span class="hud-indicator-badge">
+                            <span class="hud-indicator-key">${key}</span>
+                            <span class="hud-indicator-value">${value}</span>
+                        </span>`;
+                    } else {
+                        indHtml += `<span class="hud-indicator-badge single">${key}</span>`;
+                    }
+                });
+                indHtml += `</div>`;
+                return indHtml;
+            });
+        }
+
+        // 2. ดักจับ [HUD_UI] สำหรับ Tracker ด้านล่าง (โค้ดเดิมของคุณ)
+        if (newHtml.includes("[HUD_UI]")) {
             const regex = /\[HUD_UI\]([\s\S]*?)\[\/HUD_UI\]/g;
 
-            const newHtml = html.replace(regex, (match, innerText) => {
+            newHtml = newHtml.replace(regex, (match, innerText) => {
                 let headerHtml = "";
                 let sectionsHtml = "";
 
-                // 1. จัดการ [HEADER] แบบใหม่ ให้แยกข้อมูลได้เหมือนตาราง
                 const headerMatch = innerText.match(/\[HEADER\]([\s\S]*?)\[\/HEADER\]/);
                 if (headerMatch) {
                     const headerContent = headerMatch[1].replace(/<br\s*\/?>/gi, '').trim();
@@ -84,7 +112,6 @@ function renderHUD() {
                                 <span class="hud-header-value">${value}</span>
                             </div>`;
                         } else {
-                            // กรณีใส่มาแค่ข้อความเดียว ไม่มีเครื่องหมาย :
                             headerGrid += `<div class="hud-header-full">${key}</div>`;
                         }
                     });
@@ -92,7 +119,6 @@ function renderHUD() {
                     headerHtml = headerGrid;
                 }
 
-                // 2. จัดการแท็กอื่นๆ (พับเก็บได้)
                 const tagRegex = /\[([A-Z0-9_]+)\]([\s\S]*?)\[\/\1\]/g;
                 let tagMatch;
 
@@ -140,10 +166,11 @@ function renderHUD() {
                     </div>
                 </div>`;
             });
+        }
 
-            if (html !== newHtml) {
-                $(this).html(newHtml);
-            }
+        // อัปเดต HTML หากมีการแปลงแท็กใดๆ เกิดขึ้น
+        if (html !== newHtml) {
+            $(this).html(newHtml);
         }
     });
 }
