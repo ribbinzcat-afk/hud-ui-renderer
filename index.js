@@ -63,10 +63,15 @@ jQuery(async () => {
         loadSettings();
         $("#hud_ui_enabled").on("input", onCheckboxChange);
 
-        // NEW: ดักจับอีเวนต์เมื่อแชทมีการเปลี่ยนแปลง หรือมีข้อความใหม่
+        // ดักจับอีเวนต์เมื่อแชทมีการเปลี่ยนแปลง หรือมีข้อความใหม่
         eventSource.on(event_types.CHAT_CHANGED, renderHUD);
         eventSource.on(event_types.MESSAGE_RECEIVED, renderHUD);
         eventSource.on(event_types.MESSAGE_EDITED, renderHUD);
+
+        // NEW: เพิ่มอีเวนต์เหล่านี้เพื่อแก้ปัญหาตอนปิดสตรีมมิ่ง
+        eventSource.on(event_types.GENERATION_STOPPED, renderHUD); // ทำงานเมื่อบอทพิมพ์ข้อความเสร็จ (สำคัญมากตอนปิดสตรีม)
+        eventSource.on(event_types.USER_MESSAGE_SENT, renderHUD); // ทำงานเมื่อผู้ใช้ส่งข้อความ
+        eventSource.on(event_types.MESSAGE_SWIPED, renderHUD); // ทำงานเมื่อปัดเปลี่ยนข้อความ (Swipe)
 
         // รันครั้งแรกเมื่อโหลด Extension
         setTimeout(renderHUD, 1000);
