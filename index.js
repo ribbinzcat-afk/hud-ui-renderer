@@ -36,32 +36,48 @@ function renderHUD() {
             const regex = /\[HUD_UI\]([\s\S]*?)\[\/HUD_UI\]/g;
 
             const newHtml = html.replace(regex, (match, innerText) => {
-                let headerText = "HUD System";
+                let headerHtml = "";
                 let sectionsHtml = "";
 
-                // ดึงข้อมูล [HEADER] และลบแท็ก <br> ที่ระบบอาจใส่มา
+                // 1. จัดการ [HEADER] แบบใหม่ ให้แยกข้อมูลได้เหมือนตาราง
                 const headerMatch = innerText.match(/\[HEADER\]([\s\S]*?)\[\/HEADER\]/);
                 if (headerMatch) {
-                    headerText = headerMatch[1].replace(/<br\s*\/?>/gi, '').trim();
+                    const headerContent = headerMatch[1].replace(/<br\s*\/?>/gi, '').trim();
+                    const headerItems = headerContent.split('|').map(item => item.trim()).filter(item => item.length > 0);
+
+                    let headerGrid = `<div class="hud-header-grid">`;
+                    headerItems.forEach(item => {
+                        const parts = item.split(':');
+                        const key = parts[0] ? parts[0].trim() : '';
+                        const value = parts.slice(1).join(':').trim();
+
+                        if (value) {
+                            headerGrid += `<div class="hud-header-item">
+                                <span class="hud-header-key">${key}</span>
+                                <span class="hud-header-value">${value}</span>
+                            </div>`;
+                        } else {
+                            // กรณีใส่มาแค่ข้อความเดียว ไม่มีเครื่องหมาย :
+                            headerGrid += `<div class="hud-header-full">${key}</div>`;
+                        }
+                    });
+                    headerGrid += `</div>`;
+                    headerHtml = headerGrid;
                 }
 
-                // ดึงแท็กอื่นๆ ทั้งหมดแบบไดนามิก (รองรับทุกชื่อแท็ก)
+                // 2. จัดการแท็กอื่นๆ (พับเก็บได้)
                 const tagRegex = /\[([A-Z0-9_]+)\]([\s\S]*?)\[\/\1\]/g;
                 let tagMatch;
 
                 while ((tagMatch = tagRegex.exec(innerText)) !== null) {
                     const tagName = tagMatch[1];
-                    if (tagName === "HEADER") continue; // ข้าม HEADER
+                    if (tagName === "HEADER") continue;
 
-                    // ลบแท็ก <br> และช่องว่างส่วนเกิน
                     const tagContent = tagMatch[2].replace(/<br\s*\/?>/gi, '').trim();
-
-                    // แยกข้อมูลด้วยเครื่องหมาย |
                     const items = tagContent.split('|').map(item => item.trim()).filter(item => item.length > 0);
 
                     let tableHtml = `<table class="hud-ui-table"><tbody>`;
                     items.forEach(item => {
-                        // แยก Key และ Value ด้วยเครื่องหมาย :
                         const parts = item.split(':');
                         const key = parts[0] ? parts[0].trim() : '';
                         const value = parts.slice(1).join(':').trim();
@@ -69,17 +85,16 @@ function renderHUD() {
                         if (value) {
                             tableHtml += `<tr><td class="hud-key">${key}</td><td class="hud-value">${value}</td></tr>`;
                         } else {
-                            // กรณีที่ไม่มี : ให้แสดงตรงกลางเต็มบรรทัด
                             tableHtml += `<tr><td colspan="2" class="hud-full">${key}</td></tr>`;
                         }
                     });
                     tableHtml += `</tbody></table>`;
 
-                    // สร้างหมวดหมู่ที่สามารถพับเก็บได้
                     sectionsHtml += `
                         <div class="hud-ui-section">
                             <div class="hud-ui-section-header">
-                                <span>${tagName}</span>
+                                <span class="hud-section-title">${tagName}</span>
+                                <div class="hud-glow-line"></div>
                                 <i class="fa-solid fa-chevron-down hud-chevron"></i>
                             </div>
                             <div class="hud-ui-section-content">
@@ -92,7 +107,7 @@ function renderHUD() {
                 }
 
                 return `<div class="hud-ui-container">
-                    <div class="hud-ui-header">${headerText}</div>
+                    ${headerHtml ? `<div class="hud-ui-header-wrapper">${headerHtml}</div>` : ''}
                     <div class="hud-ui-body">
                         ${sectionsHtml}
                     </div>
