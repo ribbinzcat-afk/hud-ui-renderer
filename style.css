@@ -233,10 +233,12 @@
 .hud-indicator-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 8px;
     margin-bottom: 12px;
     font-family: 'Prompt', sans-serif;
     animation: hudFadeIn 0.4s ease forwards;
+    /* จัดให้แคปซูลทั้งหมดอยู่กึ่งกลาง */
+    justify-content: center;
 }
 
 .hud-indicator-badge {
@@ -244,12 +246,13 @@
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     border: 1px solid rgba(var(--hud-accent-rgb), 0.3);
-    border-radius: 6px;
-    padding: 3px 8px;
-    font-size: 0.8em;
+    /* เปลี่ยนเป็นทรงแคปซูล */
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.85em;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
     color: #e0f0ff;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2), inset 0 0 8px rgba(var(--hud-accent-rgb), 0.05);
     transition: all 0.2s ease;
@@ -262,19 +265,21 @@
 }
 
 .hud-indicator-key {
-    color: rgba(var(--hud-accent-rgb), 0.9);
+    color: rgba(var(--hud-accent-rgb), 1);
     font-weight: 500;
-    text-transform: uppercase;
-    font-size: 0.85em;
+    /* ลบการลดขนาดฟอนต์ออก เพื่อให้ขนาดเท่ากับเนื้อความ */
+    font-size: 1em;
     letter-spacing: 0.5px;
 }
 
 .hud-indicator-value {
     font-weight: 400;
+    /* ขนาดฟอนต์ 1em เท่ากับ key */
+    font-size: 1em;
     text-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
 }
 
 .hud-indicator-badge.single {
-    color: rgba(var(--hud-accent-rgb), 0.9);
+    color: rgba(var(--hud-accent-rgb), 1);
     font-weight: 500;
 }
