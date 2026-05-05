@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap');
 
-/* กำหนดค่าสีพื้นฐานเผื่อ JavaScript ยังไม่ทำงาน */
 :root {
     --hud-accent: #4da6ff;
     --hud-accent-rgb: 77, 166, 255;
@@ -112,7 +111,8 @@
 .hud-section-title {
     font-weight: 600;
     font-size: 0.85em;
-    color: #a3c2c2;
+    color: var(--hud-accent); /* เปลี่ยนสีหัวข้อให้เข้าธีม */
+    filter: brightness(1.1);
     letter-spacing: 1px;
 }
 
@@ -125,7 +125,7 @@
 
 .hud-chevron {
     font-size: 0.8em;
-    color: #6688aa;
+    color: rgba(var(--hud-accent-rgb), 0.8); /* เปลี่ยนสีลูกศรให้เข้าธีม */
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -166,25 +166,65 @@
     background: rgba(255, 255, 255, 0.03);
 }
 
+/* --- ปรับสีเนื้อหาในตารางให้เข้ากับ Accent Color --- */
 .hud-key {
     padding: 8px 15px;
-    color: #7b9ab8;
+    color: rgba(var(--hud-accent-rgb), 0.85); /* ใช้สีธีมแบบโปร่งใสเล็กน้อย */
     width: 45%;
-    font-weight: 300;
+    font-weight: 400;
 }
 
 .hud-value {
     padding: 8px 15px;
-    color: #e6f2ff;
-    font-weight: 400;
+    color: #ffffff;
+    font-weight: 500;
     text-align: right;
-    text-shadow: 0 0 3px rgba(255, 255, 255, 0.2);
+    text-shadow: 0 0 6px rgba(var(--hud-accent-rgb), 0.5); /* เรืองแสงด้วยสีธีม */
 }
 
 .hud-full {
     padding: 8px 15px;
-    color: #cce0ff;
+    color: rgba(var(--hud-accent-rgb), 0.9);
     text-align: center;
     font-style: italic;
-    font-weight: 300;
+    font-weight: 400;
+}
+
+/* --- การแสดงผลบนมือถือ (Responsive) --- */
+@media (max-width: 600px) {
+    .hud-ui-header-wrapper {
+        padding: 10px 8px; /* ลดระยะขอบบนมือถือ */
+    }
+
+    .hud-header-grid {
+        gap: 6px; /* ลดช่องว่างระหว่างแคปซูล */
+    }
+
+    .hud-header-item {
+        padding: 3px 8px; /* ย่อขนาดแคปซูล */
+        border-radius: 12px;
+    }
+
+    .hud-header-key {
+        font-size: 0.7em; /* ลดขนาดฟอนต์หัวข้อ */
+        letter-spacing: 0;
+    }
+
+    .hud-header-value {
+        font-size: 0.8em; /* ลดขนาดฟอนต์ข้อมูล */
+    }
+
+    .hud-header-full {
+        font-size: 0.9em;
+    }
+
+    /* ลดขนาด Padding ของตารางด้านในบนมือถือ */
+    .hud-key, .hud-value, .hud-full {
+        padding: 6px 10px;
+        font-size: 0.9em;
+    }
+
+    .hud-ui-section-header {
+        padding: 8px 12px;
+    }
 }
