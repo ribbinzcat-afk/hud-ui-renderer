@@ -53,6 +53,14 @@ function renderHUD() {
     });
 }
 
+// NEW: ฟังก์ชันหน่วงเวลาเพื่อรอให้ DOM อัปเดตเสร็จก่อนทำงาน
+let renderTimeout;
+function scheduleRender() {
+    clearTimeout(renderTimeout);
+    // หน่วงเวลา 200 มิลลิวินาที (หากยังไม่ติด สามารถลองปรับเป็น 500 ได้)
+    renderTimeout = setTimeout(renderHUD, 200);
+}
+
 jQuery(async () => {
     console.log(`[${extensionName}] Loading...`);
 
@@ -63,15 +71,13 @@ jQuery(async () => {
         loadSettings();
         $("#hud_ui_enabled").on("input", onCheckboxChange);
 
-        // ดักจับอีเวนต์เมื่อแชทมีการเปลี่ยนแปลง หรือมีข้อความใหม่
-        eventSource.on(event_types.CHAT_CHANGED, renderHUD);
-        eventSource.on(event_types.MESSAGE_RECEIVED, renderHUD);
-        eventSource.on(event_types.MESSAGE_EDITED, renderHUD);
-
-        // NEW: เพิ่มอีเวนต์เหล่านี้เพื่อแก้ปัญหาตอนปิดสตรีมมิ่ง
-        eventSource.on(event_types.GENERATION_STOPPED, renderHUD); // ทำงานเมื่อบอทพิมพ์ข้อความเสร็จ (สำคัญมากตอนปิดสตรีม)
-        eventSource.on(event_types.USER_MESSAGE_SENT, renderHUD); // ทำงานเมื่อผู้ใช้ส่งข้อความ
-        eventSource.on(event_types.MESSAGE_SWIPED, renderHUD); // ทำงานเมื่อปัดเปลี่ยนข้อความ (Swipe)
+        // เปลี่ยนมาใช้ scheduleRender แทน renderHUD โดยตรง
+        eventSource.on(event_types.CHAT_CHANGED, scheduleRender);
+        eventSource.on(event_types.MESSAGE_RECEIVED, scheduleRender);
+        eventSource.on(event_types.MESSAGE_EDITED, scheduleRender);
+        eventSource.on(event_types.GENERATION_STOPPED, scheduleRender);
+        eventSource.on(event_types.USER_MESSAGE_SENT, scheduleRender);
+        eventSource.on(event_types.MESSAGE_SWIPED, scheduleRender);
 
         // รันครั้งแรกเมื่อโหลด Extension
         setTimeout(renderHUD, 1000);
