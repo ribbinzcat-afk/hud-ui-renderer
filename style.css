@@ -1,19 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap');
 
+/* กำหนดค่าสีพื้นฐานเผื่อ JavaScript ยังไม่ทำงาน */
+:root {
+    --hud-accent: #4da6ff;
+    --hud-accent-rgb: 77, 166, 255;
+}
+
 .hud-ui-container {
     font-family: 'Prompt', sans-serif;
-    /* สไตล์ Liquid Glass */
     background: rgba(15, 25, 40, 0.35);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(100, 200, 255, 0.2);
+    border: 1px solid rgba(var(--hud-accent-rgb), 0.2);
     border-radius: 16px;
     margin: 15px 0;
     color: #e0f0ff;
-    /* เอฟเฟกต์ Glow เรืองแสง */
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4),
-                0 0 20px rgba(77, 166, 255, 0.15),
-                inset 0 0 20px rgba(77, 166, 255, 0.05);
+                0 0 20px rgba(var(--hud-accent-rgb), 0.15),
+                inset 0 0 20px rgba(var(--hud-accent-rgb), 0.05);
     overflow: hidden;
     animation: hudFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -23,10 +27,9 @@
     100% { opacity: 1; transform: translateY(0) scale(1); filter: brightness(1); }
 }
 
-/* --- ส่วน Header (แสดงสถานะหลัก/บริบท) --- */
 .hud-ui-header-wrapper {
-    background: linear-gradient(180deg, rgba(77, 166, 255, 0.15) 0%, rgba(77, 166, 255, 0) 100%);
-    border-bottom: 1px solid rgba(100, 200, 255, 0.15);
+    background: linear-gradient(180deg, rgba(var(--hud-accent-rgb), 0.15) 0%, rgba(var(--hud-accent-rgb), 0) 100%);
+    border-bottom: 1px solid rgba(var(--hud-accent-rgb), 0.15);
     padding: 15px;
 }
 
@@ -50,7 +53,8 @@
 }
 
 .hud-header-key {
-    color: #8ab4f8;
+    color: var(--hud-accent);
+    filter: brightness(1.2);
     font-weight: 500;
     text-transform: uppercase;
     font-size: 0.9em;
@@ -67,13 +71,13 @@
     width: 100%;
     text-align: center;
     font-weight: 600;
-    color: #b3d4ff;
+    color: var(--hud-accent);
+    filter: brightness(1.2);
     font-size: 1.1em;
-    text-shadow: 0 0 8px rgba(100, 200, 255, 0.4);
+    text-shadow: 0 0 8px rgba(var(--hud-accent-rgb), 0.4);
     margin-bottom: 5px;
 }
 
-/* --- ส่วน Body และหมวดหมู่ย่อย --- */
 .hud-ui-body {
     padding: 12px;
     display: flex;
@@ -91,8 +95,8 @@
 
 .hud-ui-section:hover {
     background: rgba(0, 0, 0, 0.3);
-    border-color: rgba(100, 200, 255, 0.15);
-    box-shadow: 0 0 15px rgba(77, 166, 255, 0.05);
+    border-color: rgba(var(--hud-accent-rgb), 0.2);
+    box-shadow: 0 0 15px rgba(var(--hud-accent-rgb), 0.1);
 }
 
 .hud-ui-section-header {
@@ -112,11 +116,10 @@
     letter-spacing: 1px;
 }
 
-/* เส้นเรืองแสงตกแต่งข้างๆ ชื่อหมวดหมู่ */
 .hud-glow-line {
     flex-grow: 1;
     height: 1px;
-    background: linear-gradient(90deg, rgba(100, 200, 255, 0.3) 0%, transparent 100%);
+    background: linear-gradient(90deg, rgba(var(--hud-accent-rgb), 0.4) 0%, transparent 100%);
     margin: 0 15px;
 }
 
@@ -144,7 +147,6 @@
     overflow: hidden;
 }
 
-/* --- ตารางข้อมูล --- */
 .hud-ui-table {
     width: 100%;
     border-collapse: collapse;
