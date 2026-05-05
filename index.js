@@ -167,8 +167,35 @@ function renderHUD() {
                 </div>`;
             });
         }
+                // NEW: 3. ดักจับ [NOTI] สำหรับการแจ้งเตือน
+        if (newHtml.includes("[NOTI]")) {
+            const notiRegex = /\[NOTI\]([\s\S]*?)\[\/NOTI\]/g;
+            newHtml = newHtml.replace(notiRegex, (match, innerText) => {
+                // ลบ <br> และช่องว่าง
+                const content = innerText.replace(/<br\s*\/?>/gi, '').trim();
 
-        // อัปเดต HTML หากมีการแปลงแท็กใดๆ เกิดขึ้น
+                // แยกหัวข้อกับเนื้อหาถ้ามีเครื่องหมาย :
+                let title = "SYSTEM NOTIFICATION";
+                let text = content;
+
+                const colonIndex = content.indexOf(':');
+                if (colonIndex !== -1) {
+                    title = content.substring(0, colonIndex).trim();
+                    text = content.substring(colonIndex + 1).trim();
+                }
+
+                return `<div class="hud-noti-container">
+                    <div class="hud-noti-icon-wrapper">
+                        <i class="fa-solid fa-bell hud-noti-icon"></i>
+                    </div>
+                    <div class="hud-noti-text">
+                        <div class="hud-noti-title">${title}</div>
+                        <div class="hud-noti-desc">${text}</div>
+                    </div>
+                </div>`;
+            });
+        }
+
         if (html !== newHtml) {
             $(this).html(newHtml);
         }
