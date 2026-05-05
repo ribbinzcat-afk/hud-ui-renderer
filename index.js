@@ -165,6 +165,8 @@ jQuery(async () => {
 
         loadSettings();
         $("#hud_ui_enabled").on("input", onCheckboxChange);
+        // ผูกอีเวนต์เมื่อเลือกสีใหม่
+        $("#hud_ui_color").on("input", onColorChange);
 
         // NEW: ผูกอีเวนต์สำหรับการคลิกเพื่อพับเก็บหมวดหมู่ (Collapse)
         $(document).on("click", ".hud-ui-section-header", function() {
