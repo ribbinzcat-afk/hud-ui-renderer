@@ -91,7 +91,7 @@ function renderHUD() {
                     tableHtml += `</tbody></table>`;
 
                     sectionsHtml += `
-                        <div class="hud-ui-section">
+                        <div class="hud-ui-section collapsed">
                             <div class="hud-ui-section-header">
                                 <span class="hud-section-title">${tagName}</span>
                                 <div class="hud-glow-line"></div>
