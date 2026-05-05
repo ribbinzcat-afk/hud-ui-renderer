@@ -167,7 +167,7 @@ function renderHUD() {
                 </div>`;
             });
         }
-                // NEW: 3. ดักจับ [NOTI] สำหรับการแจ้งเตือน
+        // NEW: 3. ดักจับ [NOTI] สำหรับการแจ้งเตือน
         if (newHtml.includes("[NOTI]")) {
             const notiRegex = /\[NOTI\]([\s\S]*?)\[\/NOTI\]/g;
             newHtml = newHtml.replace(notiRegex, (match, innerText) => {
@@ -195,6 +195,58 @@ function renderHUD() {
                 </div>`;
             });
         }
+
+        // NEW: 4. ดักจับ [CHAT:...] แบบต่อเนื่องให้รวมเป็นหน้าจอเดียว
+        // Regex นี้จะหา [CHAT:...] ที่อยู่ติดกัน (แม้จะมี <br> คั่น)
+        const chatBlockRegex = /(?:\[CHAT:[^\]]*\][\s\r\n]*(?:<br\s*\/?>[\s\r\n]*)*)+/g;
+
+        newHtml = newHtml.replace(chatBlockRegex, (match) => {
+            let chatHtml = `<div class="hud-chat-container">
+                <div class="hud-chat-header">
+                    <i class="fa-solid fa-message"></i> <span>COMMUNICATION LINK</span>
+                </div>
+                <div class="hud-chat-body">`;
+
+            const singleChatRegex = /\[CHAT:([^\]]+)\]/g;
+            let chatMatch;
+
+            while ((chatMatch = singleChatRegex.exec(match)) !== null) {
+                const content = chatMatch[1].trim();
+                let align = "left"; // ค่าเริ่มต้นคือฝั่งซ้าย
+                let textToParse = content;
+
+                // เช็คว่าขึ้นต้นด้วย L: หรือ R: เพื่อกำหนดฝั่ง
+                if (textToParse.startsWith("L:")) {
+                    align = "left";
+                    textToParse = textToParse.substring(2).trim();
+                } else if (textToParse.startsWith("R:")) {
+                    align = "right";
+                    textToParse = textToParse.substring(2).trim();
+                }
+
+                let sender = "UNKNOWN";
+                let text = textToParse;
+
+                // แยกชื่อคนส่งกับข้อความด้วยเครื่องหมาย :
+                const colonIndex = textToParse.indexOf(':');
+                if (colonIndex !== -1) {
+                    sender = textToParse.substring(0, colonIndex).trim();
+                    text = textToParse.substring(colonIndex + 1).trim();
+                }
+
+                const alignClass = align === "right" ? "hud-chat-right" : "hud-chat-left";
+
+                chatHtml += `
+                    <div class="hud-chat-msg ${alignClass}">
+                        <div class="hud-chat-sender">${sender}</div>
+                        <div class="hud-chat-bubble">${text}</div>
+                    </div>
+                `;
+            }
+
+            chatHtml += `</div></div>`;
+            return chatHtml;
+        });
 
         if (html !== newHtml) {
             $(this).html(newHtml);
