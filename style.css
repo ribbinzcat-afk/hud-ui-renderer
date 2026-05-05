@@ -283,3 +283,21 @@
     color: rgba(var(--hud-accent-rgb), 1);
     font-weight: 500;
 }
+
+/* --- การแสดงผล Indicator บนมือถือ (Responsive) --- */
+@media (max-width: 600px) {
+    .hud-indicator-container {
+        gap: 6px; /* ลดช่องว่างระหว่างแคปซูล */
+        margin-bottom: 8px; /* ลดระยะห่างจากข้อความหลัก */
+    }
+
+    .hud-indicator-badge {
+        padding: 3px 10px; /* ลดขนาดกรอบแคปซูล */
+        font-size: 0.75em; /* ลดขนาดฟอนต์โดยรวม */
+        border-radius: 16px;
+    }
+
+    .hud-indicator-key {
+        letter-spacing: 0; /* ลดช่องว่างตัวอักษรเพื่อประหยัดพื้นที่ */
+    }
+}
