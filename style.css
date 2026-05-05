@@ -1,27 +1,123 @@
-/* นำเข้าฟอนต์ Prompt จาก Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600&display=swap');
 
 .hud-ui-container {
     font-family: 'Prompt', sans-serif;
-    background-color: rgba(20, 20, 20, 0.85);
-    border: 1px solid #555;
-    border-radius: 8px;
-    padding: 12px;
-    margin: 10px 0;
-    color: #eee;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, rgba(20, 25, 30, 0.9) 0%, rgba(10, 15, 20, 0.95) 100%);
+    border: 1px solid #3a4a5a;
+    border-radius: 10px;
+    margin: 15px 0;
+    color: #e0e0e0;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    /* แอนิเมชันเด้งขึ้นมาตอนปรากฏ */
+    animation: hudFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.hud-ui-title {
+@keyframes hudFadeIn {
+    0% { opacity: 0; transform: translateY(15px) scale(0.98); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.hud-ui-header {
     font-weight: 600;
-    color: #4da6ff;
-    border-bottom: 1px solid #555;
-    padding-bottom: 8px;
-    margin-bottom: 8px;
+    font-size: 1.1em;
+    color: #66b3ff;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 12px 15px;
+    border-bottom: 1px solid #3a4a5a;
     text-align: center;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 8px rgba(102, 179, 255, 0.3);
 }
 
-.hud-ui-raw {
-    font-size: 0.95em;
-    line-height: 1.5;
+.hud-ui-body {
+    padding: 10px;
+}
+
+.hud-ui-section {
+    margin-bottom: 8px;
+    border: 1px solid #2a3542;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.hud-ui-section:last-child {
+    margin-bottom: 0;
+}
+
+.hud-ui-section-header {
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+    font-size: 0.9em;
+    color: #a3c2c2;
+    transition: background 0.2s ease;
+    user-select: none;
+}
+
+.hud-ui-section-header:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.hud-chevron {
+    transition: transform 0.3s ease;
+    font-size: 0.8em;
+}
+
+.hud-ui-section.collapsed .hud-chevron {
+    transform: rotate(-90deg);
+}
+
+/* เทคนิคแอนิเมชันพับเก็บที่ลื่นไหลโดยใช้ CSS Grid */
+.hud-ui-section-content {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.3s ease;
+}
+
+.hud-ui-section.collapsed .hud-ui-section-content {
+    grid-template-rows: 0fr;
+}
+
+.hud-ui-section-content-inner {
+    overflow: hidden;
+}
+
+.hud-ui-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85em;
+}
+
+.hud-ui-table tr {
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.hud-ui-table tr:first-child {
+    border-top: none;
+}
+
+.hud-key {
+    padding: 8px 12px;
+    color: #8c9baf;
+    width: 45%;
+    vertical-align: top;
+}
+
+.hud-value {
+    padding: 8px 12px;
+    color: #d1d9e1;
+    font-weight: 500;
+    text-align: right;
+}
+
+.hud-full {
+    padding: 8px 12px;
+    color: #d1d9e1;
+    text-align: center;
 }
