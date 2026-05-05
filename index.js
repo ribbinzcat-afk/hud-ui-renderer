@@ -26,26 +26,79 @@ function onCheckboxChange(event) {
     console.log(`[${extensionName}] Setting saved:`, value);
 }
 
-// NEW: ฟังก์ชันค้นหาและแทนที่ข้อความในแชท
 function renderHUD() {
     if (!extension_settings[extensionName].enabled) return;
 
     $(".mes_text").each(function () {
         let html = $(this).html();
 
-        // ตรวจสอบว่ามีแท็ก [HUD_UI] หรือไม่
         if (html.includes("[HUD_UI]")) {
-            // ดักจับข้อความที่อยู่ระหว่าง [HUD_UI] และ [/HUD_UI]
             const regex = /\[HUD_UI\]([\s\S]*?)\[\/HUD_UI\]/g;
 
             const newHtml = html.replace(regex, (match, innerText) => {
+                let headerText = "HUD System";
+                let sectionsHtml = "";
+
+                // ดึงข้อมูล [HEADER] และลบแท็ก <br> ที่ระบบอาจใส่มา
+                const headerMatch = innerText.match(/\[HEADER\]([\s\S]*?)\[\/HEADER\]/);
+                if (headerMatch) {
+                    headerText = headerMatch[1].replace(/<br\s*\/?>/gi, '').trim();
+                }
+
+                // ดึงแท็กอื่นๆ ทั้งหมดแบบไดนามิก (รองรับทุกชื่อแท็ก)
+                const tagRegex = /\[([A-Z0-9_]+)\]([\s\S]*?)\[\/\1\]/g;
+                let tagMatch;
+
+                while ((tagMatch = tagRegex.exec(innerText)) !== null) {
+                    const tagName = tagMatch[1];
+                    if (tagName === "HEADER") continue; // ข้าม HEADER
+
+                    // ลบแท็ก <br> และช่องว่างส่วนเกิน
+                    const tagContent = tagMatch[2].replace(/<br\s*\/?>/gi, '').trim();
+
+                    // แยกข้อมูลด้วยเครื่องหมาย |
+                    const items = tagContent.split('|').map(item => item.trim()).filter(item => item.length > 0);
+
+                    let tableHtml = `<table class="hud-ui-table"><tbody>`;
+                    items.forEach(item => {
+                        // แยก Key และ Value ด้วยเครื่องหมาย :
+                        const parts = item.split(':');
+                        const key = parts[0] ? parts[0].trim() : '';
+                        const value = parts.slice(1).join(':').trim();
+
+                        if (value) {
+                            tableHtml += `<tr><td class="hud-key">${key}</td><td class="hud-value">${value}</td></tr>`;
+                        } else {
+                            // กรณีที่ไม่มี : ให้แสดงตรงกลางเต็มบรรทัด
+                            tableHtml += `<tr><td colspan="2" class="hud-full">${key}</td></tr>`;
+                        }
+                    });
+                    tableHtml += `</tbody></table>`;
+
+                    // สร้างหมวดหมู่ที่สามารถพับเก็บได้
+                    sectionsHtml += `
+                        <div class="hud-ui-section">
+                            <div class="hud-ui-section-header">
+                                <span>${tagName}</span>
+                                <i class="fa-solid fa-chevron-down hud-chevron"></i>
+                            </div>
+                            <div class="hud-ui-section-content">
+                                <div class="hud-ui-section-content-inner">
+                                    ${tableHtml}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
                 return `<div class="hud-ui-container">
-                    <div class="hud-ui-title">✨ HUD UI System ✨</div>
-                    <div class="hud-ui-raw">${innerText}</div>
+                    <div class="hud-ui-header">${headerText}</div>
+                    <div class="hud-ui-body">
+                        ${sectionsHtml}
+                    </div>
                 </div>`;
             });
 
-            // อัปเดตข้อความในแชทถ้ามีการเปลี่ยนแปลง
             if (html !== newHtml) {
                 $(this).html(newHtml);
             }
@@ -70,6 +123,11 @@ jQuery(async () => {
 
         loadSettings();
         $("#hud_ui_enabled").on("input", onCheckboxChange);
+
+        // NEW: ผูกอีเวนต์สำหรับการคลิกเพื่อพับเก็บหมวดหมู่ (Collapse)
+        $(document).on("click", ".hud-ui-section-header", function() {
+            $(this).parent().toggleClass("collapsed");
+        });
 
         // เปลี่ยนมาใช้ scheduleRender แทน renderHUD โดยตรง
         eventSource.on(event_types.CHAT_CHANGED, scheduleRender);
