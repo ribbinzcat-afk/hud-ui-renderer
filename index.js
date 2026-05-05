@@ -5,7 +5,26 @@ import { saveSettingsDebounced, eventSource, event_types } from "../../../../scr
 const extensionName = "hud-ui-renderer";
 const extensionFolderPath = `scripts/extensions/third-party/${extensionName}`;
 
-// ... (โค้ด defaultSettings, loadSettings, onCheckboxChange คงเดิม) ...
+const defaultSettings = {
+    enabled: true
+};
+
+async function loadSettings() {
+    extension_settings[extensionName] = extension_settings[extensionName] || {};
+
+    if (Object.keys(extension_settings[extensionName]).length === 0) {
+        Object.assign(extension_settings[extensionName], defaultSettings);
+    }
+
+    $("#hud_ui_enabled").prop("checked", extension_settings[extensionName].enabled);
+}
+
+function onCheckboxChange(event) {
+    const value = Boolean($(event.target).prop("checked"));
+    extension_settings[extensionName].enabled = value;
+    saveSettingsDebounced();
+    console.log(`[${extensionName}] Setting saved:`, value);
+}
 
 // NEW: ฟังก์ชันค้นหาและแทนที่ข้อความในแชท
 function renderHUD() {
