@@ -386,3 +386,111 @@
         font-size: 0.85em;
     }
 }
+
+/* --- ส่วน Communication Chat --- */
+.hud-chat-container {
+    background: rgba(15, 25, 40, 0.35);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(var(--hud-accent-rgb), 0.3);
+    border-radius: 16px;
+    margin: 15px 0;
+    overflow: hidden;
+    font-family: 'Prompt', sans-serif;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), inset 0 0 15px rgba(var(--hud-accent-rgb), 0.05);
+    animation: hudFadeIn 0.5s ease forwards;
+}
+
+.hud-chat-header {
+    background: linear-gradient(90deg, rgba(var(--hud-accent-rgb), 0.2) 0%, rgba(var(--hud-accent-rgb), 0.05) 100%);
+    padding: 10px 15px;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: var(--hud-accent);
+    filter: brightness(1.2);
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(var(--hud-accent-rgb), 0.2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.hud-chat-body {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    /* ใส่พื้นหลังเป็นลายเส้นกริดบางๆ ให้ดูเป็นโฮโลแกรม */
+    background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.hud-chat-msg {
+    display: flex;
+    flex-direction: column;
+    max-width: 85%;
+    animation: hudFadeIn 0.3s ease forwards;
+}
+
+.hud-chat-left {
+    align-self: flex-start;
+    align-items: flex-start;
+}
+
+.hud-chat-right {
+    align-self: flex-end;
+    align-items: flex-end;
+}
+
+.hud-chat-sender {
+    font-size: 0.75em;
+    margin-bottom: 4px;
+    padding: 0 4px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.hud-chat-left .hud-chat-sender {
+    color: var(--hud-accent);
+    filter: brightness(1.2);
+}
+
+.hud-chat-right .hud-chat-sender {
+    color: #a3c2c2;
+}
+
+.hud-chat-bubble {
+    padding: 8px 14px;
+    border-radius: 14px;
+    font-size: 0.95em;
+    line-height: 1.5;
+    color: #e0f0ff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* บับเบิ้ลฝั่งซ้าย (คู่สนทนา) */
+.hud-chat-left .hud-chat-bubble {
+    background: rgba(var(--hud-accent-rgb), 0.15);
+    border: 1px solid rgba(var(--hud-accent-rgb), 0.3);
+    border-top-left-radius: 4px; /* ทำมุมแหลมชี้ไปทางคนพูด */
+}
+
+/* บับเบิ้ลฝั่งขวา (ตัวเรา) */
+.hud-chat-right .hud-chat-bubble {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-top-right-radius: 4px; /* ทำมุมแหลมชี้ไปทางคนพูด */
+}
+
+/* Responsive สำหรับมือถือ */
+@media (max-width: 600px) {
+    .hud-chat-msg {
+        max-width: 95%;
+    }
+    .hud-chat-bubble {
+        font-size: 0.9em;
+        padding: 6px 12px;
+    }
+}
