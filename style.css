@@ -228,3 +228,53 @@
         padding: 8px 12px;
     }
 }
+
+/* --- ส่วน Indicator ด้านบนสุดของข้อความ --- */
+.hud-indicator-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+    font-family: 'Prompt', sans-serif;
+    animation: hudFadeIn 0.4s ease forwards;
+}
+
+.hud-indicator-badge {
+    background: rgba(15, 25, 40, 0.4);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(var(--hud-accent-rgb), 0.3);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 0.8em;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #e0f0ff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2), inset 0 0 8px rgba(var(--hud-accent-rgb), 0.05);
+    transition: all 0.2s ease;
+}
+
+.hud-indicator-badge:hover {
+    background: rgba(20, 30, 50, 0.6);
+    border-color: rgba(var(--hud-accent-rgb), 0.6);
+    box-shadow: 0 2px 8px rgba(var(--hud-accent-rgb), 0.2);
+}
+
+.hud-indicator-key {
+    color: rgba(var(--hud-accent-rgb), 0.9);
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 0.5px;
+}
+
+.hud-indicator-value {
+    font-weight: 400;
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
+}
+
+.hud-indicator-badge.single {
+    color: rgba(var(--hud-accent-rgb), 0.9);
+    font-weight: 500;
+}
