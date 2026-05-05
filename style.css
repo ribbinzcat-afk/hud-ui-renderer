@@ -1,1 +1,27 @@
-/* เว้นว่างไว้ก่อน เราจะมาใส่สไตล์ในภายหลัง */
+/* นำเข้าฟอนต์ Prompt จาก Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap');
+
+.hud-ui-container {
+    font-family: 'Prompt', sans-serif;
+    background-color: rgba(20, 20, 20, 0.85);
+    border: 1px solid #555;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 10px 0;
+    color: #eee;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.hud-ui-title {
+    font-weight: 600;
+    color: #4da6ff;
+    border-bottom: 1px solid #555;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.hud-ui-raw {
+    font-size: 0.95em;
+    line-height: 1.5;
+}
