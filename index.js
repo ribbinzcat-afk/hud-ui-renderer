@@ -167,21 +167,25 @@ function renderHUD() {
                 </div>`;
             });
         }
+        
         // NEW: 3. ดักจับ [NOTI] สำหรับการแจ้งเตือน
+        // 3. ดักจับ [NOTI] สำหรับการแจ้งเตือน
         if (newHtml.includes("[NOTI]")) {
             const notiRegex = /\[NOTI\]([\s\S]*?)\[\/NOTI\]/g;
             newHtml = newHtml.replace(notiRegex, (match, innerText) => {
-                // ลบ <br> และช่องว่าง
-                const content = innerText.replace(/<br\s*\/?>/gi, '').trim();
+                // ลบเฉพาะ <br> และช่องว่างที่อยู่ "หัว" และ "ท้าย" ของข้อความทั้งหมดออก แต่เก็บอันตรงกลางไว้
+                let content = innerText.replace(/^(?:<br\s*\/?>|\s)+|(?:<br\s*\/?>|\s)+$/gi, '');
 
-                // แยกหัวข้อกับเนื้อหาถ้ามีเครื่องหมาย :
                 let title = "SYSTEM NOTIFICATION";
                 let text = content;
 
                 const colonIndex = content.indexOf(':');
                 if (colonIndex !== -1) {
-                    title = content.substring(0, colonIndex).trim();
-                    text = content.substring(colonIndex + 1).trim();
+                    // หัวข้อ (Title) ไม่ควรมีการเว้นบรรทัด จึงลบ <br> ออกทั้งหมด
+                    title = content.substring(0, colonIndex).replace(/<br\s*\/?>/gi, '').trim();
+
+                    // เนื้อหา (Text) เก็บ <br> ไว้ แต่ลบช่องว่างหรือ <br> ที่อาจจะติดมาตรงต้นประโยคออก
+                    text = content.substring(colonIndex + 1).replace(/^(?:<br\s*\/?>|\s)+/, '');
                 }
 
                 return `<div class="hud-noti-container">
