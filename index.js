@@ -252,6 +252,49 @@ function renderHUD() {
             return chatHtml;
         });
 
+        // NEW: 5. ดักจับ [EVENT_UI] สำหรับคำถามและตัวเลือก
+        if (newHtml.includes("[EVENT_UI]")) {
+            const eventRegex = /\[EVENT_UI\]([\s\S]*?)\[\/EVENT_UI\]/g;
+            newHtml = newHtml.replace(eventRegex, (match, innerText) => {
+                let questionText = "เหตุการณ์ใหม่";
+                let choicesHtml = "";
+
+                // ดึงคำถาม
+                const questionMatch = innerText.match(/\[QUESTION\]([\s\S]*?)\[\/QUESTION\]/);
+                if (questionMatch) {
+                    questionText = questionMatch[1].replace(/<br\s*\/?>/gi, '').trim();
+                }
+
+                // ดึงตัวเลือก
+                const choicesMatch = innerText.match(/\[CHOICES\]([\s\S]*?)\[\/CHOICES\]/);
+                if (choicesMatch) {
+                    const choicesContent = choicesMatch[1].replace(/<br\s*\/?>/gi, '').trim();
+                    const items = choicesContent.split('|').map(item => item.trim()).filter(item => item.length > 0);
+
+                    items.forEach(item => {
+                        // เก็บข้อความตัวเลือกไว้ใน data-choice เพื่อนำไปใช้ตอนกดปุ่ม
+                        // แปลงเครื่องหมายคำพูดให้ปลอดภัย (Escape)
+                        const safeItem = item.replace(/"/g, '"');
+                        choicesHtml += `<button class="hud-event-choice-btn" data-choice="${safeItem}">${item}</button>`;
+                    });
+                }
+
+                return `
+                    <div class="hud-event-container">
+                        <div class="hud-event-question">
+                            <div class="hud-event-icon-wrapper">
+                                <i class="fa-solid fa-circle-exclamation hud-event-icon"></i>
+                            </div>
+                            <div class="hud-event-text">${questionText}</div>
+                        </div>
+                        <div class="hud-event-choices">
+                            ${choicesHtml}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
         if (html !== newHtml) {
             $(this).html(newHtml);
         }
@@ -277,6 +320,26 @@ jQuery(async () => {
         $("#hud_ui_enabled").on("input", onCheckboxChange);
         // ผูกอีเวนต์เมื่อเลือกสีใหม่
         $("#hud_ui_color").on("input", onColorChange);
+
+        // NEW: ผูกอีเวนต์เมื่อกดปุ่มตัวเลือก (Choice)
+        $(document).on("click", ".hud-event-choice-btn", function() {
+            const choiceText = $(this).data("choice");
+            const textarea = $("#send_textarea");
+
+            // นำข้อความไปต่อท้ายในช่องพิมพ์
+            let currentVal = textarea.val();
+            if (currentVal && !currentVal.endsWith(" ") && !currentVal.endsWith("\n")) {
+                currentVal += " ";
+            }
+
+            textarea.val(currentVal + choiceText);
+            textarea.trigger("input"); // แจ้งให้ SillyTavern รู้ว่ามีการพิมพ์
+            textarea.focus(); // โฟกัสที่ช่องพิมพ์ให้ผู้ใช้พร้อมกดส่ง
+
+            // แสดงเอฟเฟกต์ตอบรับเล็กน้อย
+            $(this).css("transform", "scale(0.95)");
+            setTimeout(() => $(this).css("transform", ""), 150);
+        });
 
         // NEW: ผูกอีเวนต์สำหรับการคลิกเพื่อพับเก็บหมวดหมู่ (Collapse)
         $(document).on("click", ".hud-ui-section-header", function() {
