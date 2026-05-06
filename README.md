@@ -148,6 +148,6 @@ You must use the following tags to enhance the roleplay experience when appropri
 ---
 
 ## 🍀 Credit / Special Thanks
-*พัฒนาโดย: Apricity*
-*Special Thanks: Universal Extension Creator Prompt by Chai*
-*ขอบคุณ คุณ POPKO สำหรับการช่วยทดสอบ*
+- *พัฒนาโดย: Apricity และ Gemini*
+- *Special Thanks: Universal Extension Creator Prompt by Chai*
+- *ขอบคุณ คุณ POPKO สำหรับการช่วยทดสอบ*
