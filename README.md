@@ -79,6 +79,9 @@ You must use the following tags to enhance the roleplay experience when appropri
 ```
 
 ### 2. หน้าต่างสถานะ (Status Tracker)
+
+![ตัวอย่างสเตตัส](https://ik.imagekit.io/apricity/UI%20Renderer/Status.png)
+
 ใช้แสดงข้อมูลตัวละคร สามารถใส่หมวดหมู่ (แท็กด้านใน) ได้ไม่จำกัด และรองรับการพับเก็บ
 **โค้ด:**
 ```text
