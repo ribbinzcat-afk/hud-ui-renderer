@@ -69,12 +69,14 @@ You must use the following tags to enhance the roleplay experience when appropri
 คุณสามารถพิมพ์แท็กเหล่านี้ลงในแชทด้วยตัวเอง หรือให้ AI เป็นคนพิมพ์ก็ได้ ระบบจะแปลงเป็น UI ให้ทันที
 
 ### 1. ป้ายกำกับสถานการณ์ (Indicator)
+
+![ตัวอย่างป้ายกำกับ](https://ik.imagekit.io/apricity/UI%20Renderer/indicator.png)
+
 ใช้สำหรับบอกบริบทของฉากนั้นๆ จะแสดงเป็นแคปซูลเล็กๆ ตรงกลางหน้าจอ
 **โค้ด:**
 ```text
 [HUD_INDICATOR] สถานที่: ย่านไซเบอร์พังก์ | เวลา: 02:45 น. | อุณหภูมิ: 18°C [/HUD_INDICATOR]
 ```
-![ตัวอย่างป้ายกำกับ](https://ik.imagekit.io/apricity/UI%20Renderer/indicator.png)
 
 ### 2. หน้าต่างสถานะ (Status Tracker)
 ใช้แสดงข้อมูลตัวละคร สามารถใส่หมวดหมู่ (แท็กด้านใน) ได้ไม่จำกัด และรองรับการพับเก็บ
@@ -89,6 +91,10 @@ You must use the following tags to enhance the roleplay experience when appropri
 ```
 
 ### 3. ระบบแจ้งเตือน (Notification)
+
+![ตัวอย่างแจ้งเตือน1](https://ik.imagekit.io/apricity/UI%20Renderer/notification.png)
+![ตัวอย่างแจ้งเตือน2](https://ik.imagekit.io/apricity/UI%20Renderer/notification%202.png)
+
 ใช้สำหรับแจ้งเตือนไอเทม, เควส, หรืออันตราย รองรับการแยกหัวข้อด้วยเครื่องหมาย `:` และรองรับการขึ้นบรรทัดใหม่
 **โค้ด:**
 ```text
@@ -99,10 +105,10 @@ You must use the following tags to enhance the roleplay experience when appropri
 - ดาบสั้นขึ้นสนิม x1 [/NOTI]
 ```
 
-![ตัวอย่างแจ้งเตือน1](https://ik.imagekit.io/apricity/UI%20Renderer/notification.png)
-![ตัวอย่างแจ้งเตือน2](https://ik.imagekit.io/apricity/UI%20Renderer/notification%202.png)
-
 ### 4. หน้าจอสื่อสาร (Communication Link)
+
+![ตัวอย่างแชท](https://ik.imagekit.io/apricity/UI%20Renderer/chat.png)
+
 ใช้จำลองการคุยโทรศัพท์, วิทยุสื่อสาร, หรือแชทโฮโลแกรม
 - `L:` สำหรับข้อความฝั่งซ้าย (NPC/คู่สนทนา)
 - `R:` สำหรับข้อความฝั่งขวา (ตัวเรา)
@@ -113,9 +119,11 @@ You must use the following tags to enhance the roleplay experience when appropri
 [CHAT:R:Agent 007: กำลังดาวน์โหลดข้อมูล... ขอเวลาอีก 2 นาที]
 [CHAT:L:Operator: รีบหน่อย ตรวจพบยามรักษาการณ์กำลังเดินไปทางคุณ!]
 ```
-![ตัวอย่างแชท](https://ik.imagekit.io/apricity/UI%20Renderer/chat.png)
 
 ### 5. เหตุการณ์และตัวเลือก (Quick Event & Choices)
+
+![ตัวอย่างตัวเลือก](https://ik.imagekit.io/apricity/UI%20Renderer/choice.png)
+
 สร้างปุ่มกดแบบ Interactive เมื่อผู้เล่นคลิกที่ปุ่มตัวเลือก ข้อความนั้นจะเด้งไปรอที่ช่องพิมพ์ข้อความ (Textarea) ทันที
 **โค้ด:**
 ```text
@@ -124,7 +132,6 @@ You must use the following tags to enhance the roleplay experience when appropri
 [CHOICES] เปิดหีบทันที | ใช้เวทตรวจสอบกับดัก | เดินผ่านไปโดยไม่สนใจ [/CHOICES]
 [/EVENT_UI]
 ```
-![ตัวอย่างตัวเลือก](https://ik.imagekit.io/apricity/UI%20Renderer/choice.png)
 
 ---
 
