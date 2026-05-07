@@ -297,28 +297,46 @@ function renderHUD() {
             });
         }
 
-        // NEW: 6. ดักจับ [STATUS_CARD] สำหรับ Profile Card
-        if (newHtml.includes("[STATUS_CARD]")) {
-            const cardRegex = /\[STATUS_CARD\]([\s\S]*?)\[\/STATUS_CARD\]/g;
+        // 6. ดักจับ [STATUS_CARD] สำหรับ Profile Card
+        // อัปเดต Regex ให้รองรับ :USER และ :CHAR
+        const cardRegex = /\[STATUS_CARD(?::(USER|CHAR))?\]([\s\S]*?)\[\/STATUS_CARD\]/g;
 
-            // แอบดึงรูป Avatar และชื่อจากกล่องข้อความแชท (DOM) ของ SillyTavern
+        if (cardRegex.test(newHtml)) {
+            // แอบดึงรูป Avatar และชื่อจากกล่องข้อความแชทปัจจุบันเป็นค่าเริ่มต้น
             const mesElement = $(this).closest('.mes');
             const defaultAvatar = mesElement.find('.avatar img').attr('src') || '';
             const defaultName = mesElement.attr('ch_name') || 'UNKNOWN';
 
-            newHtml = newHtml.replace(cardRegex, (match, innerText) => {
+            // ดึงรูปและชื่อของผู้เล่น (User) จากข้อความล่าสุดของผู้เล่น
+            const userAvatar = $('.mes[is_user="true"]').last().find('.avatar img').attr('src') || defaultAvatar;
+            const userName = $('.mes[is_user="true"]').last().attr('ch_name') || 'User';
+
+            // ดึงรูปและชื่อของบอท (Character) จากข้อความล่าสุดของบอท
+            const charAvatar = $('.mes[is_user="false"]').last().find('.avatar img').attr('src') || defaultAvatar;
+            const charName = $('.mes[is_user="false"]').last().attr('ch_name') || 'Character';
+
+            newHtml = newHtml.replace(cardRegex, (match, targetType, innerText) => {
                 let cleanText = innerText.replace(/<[^>]*>/gi, '').replace(/\u200B/gi, '');
 
+                // กำหนดรูปและชื่อตามพารามิเตอร์ที่ระบุ
+                let cardAvatar = defaultAvatar;
                 let cardName = defaultName;
-                let statsHtml = '';
 
-                // ดึงชื่อ (ถ้ามีการระบุทับไว้ในแท็ก จะใช้ชื่อนี้แทนชื่อเริ่มต้น)
+                if (targetType === "USER") {
+                    cardAvatar = userAvatar;
+                    cardName = userName;
+                } else if (targetType === "CHAR") {
+                    cardAvatar = charAvatar;
+                    cardName = charName;
+                }
+
+                // ถ้ามีการระบุ [NAME] ทับไว้ข้างใน ให้ใช้ชื่อนั้นแทน
                 const nameMatch = cleanText.match(/\[NAME\]([\s\S]*?)\[\/NAME\]/);
                 if (nameMatch) {
                     cardName = nameMatch[1].trim();
                 }
 
-                // ดึงสเตตัส
+                let statsHtml = '';
                 const statsMatch = cleanText.match(/\[STATS\]([\s\S]*?)\[\/STATS\]/);
                 if (statsMatch) {
                     const statsContent = statsMatch[1].trim();
@@ -374,7 +392,7 @@ function renderHUD() {
                     <div class="hud-card-container">
                         <div class="hud-card-left">
                             <div class="hud-card-avatar-wrapper">
-                                <img src="${defaultAvatar}" class="hud-card-avatar" alt="Avatar">
+                                <img src="${cardAvatar}" class="hud-card-avatar" alt="Avatar">
                             </div>
                             <div class="hud-card-name">${cardName}</div>
                         </div>
