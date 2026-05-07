@@ -260,7 +260,7 @@ function renderHUD() {
                 let choicesHtml = "";
 
                 // ลบแท็ก <p> และ <br> ที่ SillyTavern แอบใส่มาอัตโนมัติออกก่อน
-                let cleanText = innerText.replace(/<\/?p[^>]*>/gi, '').replace(/<br\s*\/?>/gi, '');
+                let cleanText = innerText.replace(/<\/?p[^>]*>/gi, "").replace(/<br\s*\/?>/gi, "");
 
                 const questionMatch = cleanText.match(/\[QUESTION\]([\s\S]*?)\[\/QUESTION\]/);
                 if (questionMatch) {
@@ -270,13 +270,13 @@ function renderHUD() {
                 const choicesMatch = cleanText.match(/\[CHOICES\]([\s\S]*?)\[\/CHOICES\]/);
                 if (choicesMatch) {
                     const choicesContent = choicesMatch[1].trim();
-                    const items = choicesContent.split('|').map(item => item.trim()).filter(item => item.length > 0);
+                    const items = choicesContent.split("|").map(item => item.trim()).filter(item => item.length > 0);
 
                     items.forEach(item => {
                         // ลบแท็ก HTML ที่อาจหลงเหลืออยู่ออก เพื่อป้องกันบั๊กตอนนำไปใส่ใน data-choice
-                        const plainText = item.replace(/<[^>]*>?/gm, '').trim();
-                        // แปลงเครื่องหมายคำพูดให้ปลอดภัย
-                        const safeItem = plainText.replace(/"/g, '"').replace(/'/g, ''');
+                        const plainText = item.replace(/<[^>]*>?/gm, "").trim();
+                        // แปลงเครื่องหมายคำพูดให้ปลอดภัย (ใช้ Double Quotes ครอบเพื่อป้องกัน Error)
+                        const safeItem = plainText.replace(/"/g, """).replace(/'/g, "'");
 
                         choicesHtml += `<button class="hud-event-choice-btn" data-choice="${safeItem}">${item}</button>`;
                     });
