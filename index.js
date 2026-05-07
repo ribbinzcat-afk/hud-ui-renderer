@@ -297,6 +297,95 @@ function renderHUD() {
             });
         }
 
+        // NEW: 6. ดักจับ [STATUS_CARD] สำหรับ Profile Card
+        if (newHtml.includes("[STATUS_CARD]")) {
+            const cardRegex = /\[STATUS_CARD\]([\s\S]*?)\[\/STATUS_CARD\]/g;
+
+            // แอบดึงรูป Avatar และชื่อจากกล่องข้อความแชท (DOM) ของ SillyTavern
+            const mesElement = $(this).closest('.mes');
+            const defaultAvatar = mesElement.find('.avatar img').attr('src') || '';
+            const defaultName = mesElement.attr('ch_name') || 'UNKNOWN';
+
+            newHtml = newHtml.replace(cardRegex, (match, innerText) => {
+                let cleanText = innerText.replace(/<[^>]*>/gi, '').replace(/\u200B/gi, '');
+
+                let cardName = defaultName;
+                let statsHtml = '';
+
+                // ดึงชื่อ (ถ้ามีการระบุทับไว้ในแท็ก จะใช้ชื่อนี้แทนชื่อเริ่มต้น)
+                const nameMatch = cleanText.match(/\[NAME\]([\s\S]*?)\[\/NAME\]/);
+                if (nameMatch) {
+                    cardName = nameMatch[1].trim();
+                }
+
+                // ดึงสเตตัส
+                const statsMatch = cleanText.match(/\[STATS\]([\s\S]*?)\[\/STATS\]/);
+                if (statsMatch) {
+                    const statsContent = statsMatch[1].trim();
+                    const items = statsContent.split('|').map(item => item.trim()).filter(item => item.length > 0);
+
+                    items.forEach(item => {
+                        const parts = item.split(':');
+                        const key = parts[0] ? parts[0].trim() : '';
+                        const value = parts.slice(1).join(':').trim();
+
+                        if (value) {
+                            let isBar = false;
+                            let percent = 0;
+
+                            const fractionMatch = value.match(/^\s*(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)\s*$/);
+                            const percentMatch = value.match(/^\s*(\d+(?:\.\d+)?)\s*%\s*$/);
+
+                            if (fractionMatch) {
+                                const current = parseFloat(fractionMatch[1]);
+                                const max = parseFloat(fractionMatch[2]);
+                                if (max > 0) {
+                                    percent = Math.min(100, Math.max(0, (current / max) * 100));
+                                    isBar = true;
+                                }
+                            } else if (percentMatch) {
+                                percent = Math.min(100, Math.max(0, parseFloat(percentMatch[1])));
+                                isBar = true;
+                            }
+
+                            if (isBar) {
+                                statsHtml += `
+                                    <div class="hud-card-stat-bar">
+                                        <div class="hud-card-stat-header">
+                                            <span class="hud-card-stat-key">${key}</span>
+                                            <span class="hud-card-stat-value">${value}</span>
+                                        </div>
+                                        <div class="hud-bar-bg">
+                                            <div class="hud-bar-fill" style="width: ${percent}%;"></div>
+                                        </div>
+                                    </div>`;
+                            } else {
+                                statsHtml += `
+                                    <div class="hud-card-stat-text">
+                                        <span class="hud-card-stat-key">${key}:</span>
+                                        <span class="hud-card-stat-value">${value}</span>
+                                    </div>`;
+                            }
+                        }
+                    });
+                }
+
+                return `
+                    <div class="hud-card-container">
+                        <div class="hud-card-left">
+                            <div class="hud-card-avatar-wrapper">
+                                <img src="${defaultAvatar}" class="hud-card-avatar" alt="Avatar">
+                            </div>
+                            <div class="hud-card-name">${cardName}</div>
+                        </div>
+                        <div class="hud-card-right">
+                            ${statsHtml}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
         if (html !== newHtml) {
             $(this).html(newHtml);
         }
