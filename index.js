@@ -276,8 +276,7 @@ function renderHUD() {
                         // ลบแท็ก HTML ที่อาจหลงเหลืออยู่ออก เพื่อป้องกันบั๊กตอนนำไปใส่ใน data-choice
                         const plainText = item.replace(/<[^>]*>?/gm, "").trim();
                         // แปลงเครื่องหมายคำพูดให้ปลอดภัย (ใช้ Double Quotes ครอบเพื่อป้องกัน Error)
-                        const safeItem = plainText.replace(/"/g, """).replace(/'/g, "'");
-
+                        const safeItem = plainText.split('"').join('&' + 'quot;').split("'").join('&' + '#39;');
                         choicesHtml += `<button class="hud-event-choice-btn" data-choice="${safeItem}">${item}</button>`;
                     });
                 }
