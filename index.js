@@ -252,29 +252,32 @@ function renderHUD() {
             return chatHtml;
         });
 
-        // NEW: 5. ดักจับ [EVENT_UI] สำหรับคำถามและตัวเลือก
+        // 5. ดักจับ [EVENT_UI] สำหรับคำถามและตัวเลือก
         if (newHtml.includes("[EVENT_UI]")) {
             const eventRegex = /\[EVENT_UI\]([\s\S]*?)\[\/EVENT_UI\]/g;
             newHtml = newHtml.replace(eventRegex, (match, innerText) => {
                 let questionText = "เหตุการณ์ใหม่";
                 let choicesHtml = "";
 
-                // ดึงคำถาม
-                const questionMatch = innerText.match(/\[QUESTION\]([\s\S]*?)\[\/QUESTION\]/);
+                // ลบแท็ก <p> และ <br> ที่ SillyTavern แอบใส่มาอัตโนมัติออกก่อน
+                let cleanText = innerText.replace(/<\/?p[^>]*>/gi, '').replace(/<br\s*\/?>/gi, '');
+
+                const questionMatch = cleanText.match(/\[QUESTION\]([\s\S]*?)\[\/QUESTION\]/);
                 if (questionMatch) {
-                    questionText = questionMatch[1].replace(/<br\s*\/?>/gi, '').trim();
+                    questionText = questionMatch[1].trim();
                 }
 
-                // ดึงตัวเลือก
-                const choicesMatch = innerText.match(/\[CHOICES\]([\s\S]*?)\[\/CHOICES\]/);
+                const choicesMatch = cleanText.match(/\[CHOICES\]([\s\S]*?)\[\/CHOICES\]/);
                 if (choicesMatch) {
-                    const choicesContent = choicesMatch[1].replace(/<br\s*\/?>/gi, '').trim();
+                    const choicesContent = choicesMatch[1].trim();
                     const items = choicesContent.split('|').map(item => item.trim()).filter(item => item.length > 0);
 
                     items.forEach(item => {
-                        // เก็บข้อความตัวเลือกไว้ใน data-choice เพื่อนำไปใช้ตอนกดปุ่ม
-                        // แปลงเครื่องหมายคำพูดให้ปลอดภัย (Escape)
-                        const safeItem = item.replace(/"/g, '"');
+                        // ลบแท็ก HTML ที่อาจหลงเหลืออยู่ออก เพื่อป้องกันบั๊กตอนนำไปใส่ใน data-choice
+                        const plainText = item.replace(/<[^>]*>?/gm, '').trim();
+                        // แปลงเครื่องหมายคำพูดให้ปลอดภัย
+                        const safeItem = plainText.replace(/"/g, '"').replace(/'/g, ''');
+
                         choicesHtml += `<button class="hud-event-choice-btn" data-choice="${safeItem}">${item}</button>`;
                     });
                 }
