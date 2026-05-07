@@ -544,9 +544,8 @@
 
 .hud-event-choices {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column; /* เปลี่ยนให้เรียงเป็นแนวตั้ง */
     gap: 10px;
-    justify-content: center;
 }
 
 .hud-event-choice-btn {
@@ -554,15 +553,18 @@
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(var(--hud-accent-rgb), 0.5);
-    border-radius: 25px; /* ทรงแคปซูล */
-    padding: 8px 18px;
+    border-radius: 12px; /* ปรับจากแคปซูลเป็นมุมมนให้เหมาะกับข้อความยาวๆ */
+    padding: 12px 16px;
     color: var(--hud-accent);
     font-family: 'Prompt', sans-serif;
     font-size: 0.9em;
-    font-weight: 500;
+    font-weight: 400;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: left; /* จัดข้อความชิดซ้ายให้อ่านง่าย */
+    line-height: 1.5;
+    width: 100%;
 }
 
 .hud-event-choice-btn:hover {
