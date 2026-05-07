@@ -87,7 +87,7 @@ function renderHUD() {
             });
         }
 
-        // 2. ดักจับ [HUD_UI] สำหรับ Tracker ด้านล่าง (โค้ดเดิมของคุณ)
+        // 2. ดักจับ [HUD_UI] สำหรับ Tracker ด้านล่าง
         if (newHtml.includes("[HUD_UI]")) {
             const regex = /\[HUD_UI\]([\s\S]*?)\[\/HUD_UI\]/g;
 
@@ -97,20 +97,22 @@ function renderHUD() {
 
                 const headerMatch = innerText.match(/\[HEADER\]([\s\S]*?)\[\/HEADER\]/);
                 if (headerMatch) {
-                    const headerContent = headerMatch[1].replace(/<br\s*\/?>/gi, '').trim();
+                    const headerContent = headerMatch[1].replace(/<[^>]*>/gi, '').trim();
                     const headerItems = headerContent.split('|').map(item => item.trim()).filter(item => item.length > 0);
 
-                    let headerGrid = `<div class="hud-header-grid">`;
+                    let headerGrid = ``;
                     headerItems.forEach(item => {
                         const parts = item.split(':');
                         const key = parts[0] ? parts[0].trim() : '';
                         const value = parts.slice(1).join(':').trim();
 
                         if (value) {
-                            headerGrid += `<div class="hud-header-item">
-                                <span class="hud-header-key">${key}</span>
-                                <span class="hud-header-value">${value}</span>
-                            </div>`;
+                            headerGrid += `
+                                <div class="hud-header-item">
+                                    <span class="hud-header-key">${key}</span>
+                                    <span class="hud-header-value">${value}</span>
+                                </div>
+                            `;
                         } else {
                             headerGrid += `<div class="hud-header-full">${key}</div>`;
                         }
@@ -126,25 +128,61 @@ function renderHUD() {
                     const tagName = tagMatch[1];
                     if (tagName === "HEADER") continue;
 
-                    const tagContent = tagMatch[2].replace(/<br\s*\/?>/gi, '').trim();
+                    const tagContent = tagMatch[2].replace(/<[^>]*>/gi, '').trim();
                     const items = tagContent.split('|').map(item => item.trim()).filter(item => item.length > 0);
 
-                    let tableHtml = `<table class="hud-ui-table"><tbody>`;
+                    let tableHtml = ``;
                     items.forEach(item => {
                         const parts = item.split(':');
                         const key = parts[0] ? parts[0].trim() : '';
                         const value = parts.slice(1).join(':').trim();
 
                         if (value) {
-                            tableHtml += `<tr><td class="hud-key">${key}</td><td class="hud-value">${value}</td></tr>`;
+                            let isBar = false;
+                            let percent = 0;
+
+                            // ตรวจสอบรูปแบบ ตัวเลข/ตัวเลข หรือ ตัวเลข%
+                            const fractionMatch = value.match(/^\s*(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)\s*$/);
+                            const percentMatch = value.match(/^\s*(\d+(?:\.\d+)?)\s*%\s*$/);
+
+                            if (fractionMatch) {
+                                const current = parseFloat(fractionMatch[1]);
+                                const max = parseFloat(fractionMatch[2]);
+                                if (max > 0) {
+                                    percent = Math.min(100, Math.max(0, (current / max) * 100));
+                                    isBar = true;
+                                }
+                            } else if (percentMatch) {
+                                percent = Math.min(100, Math.max(0, parseFloat(percentMatch[1])));
+                                isBar = true;
+                            }
+
+                            // ถ้าระบบตรวจพบว่าเป็นหลอดพลัง ให้เรนเดอร์แบบมีหลอด
+                            if (isBar) {
+                                tableHtml += `
+                                    <tr>
+                                        <td class="hud-key">${key}</td>
+                                        <td class="hud-value">
+                                            <div class="hud-bar-container">
+                                                <div class="hud-bar-text">${value}</div>
+                                                <div class="hud-bar-bg">
+                                                    <div class="hud-bar-fill" style="width: ${percent}%;"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>`;
+                            } else {
+                                // ถ้าเป็นข้อความปกติ ก็เรนเดอร์แบบเดิม
+                                tableHtml += `<tr><td class="hud-key">${key}</td><td class="hud-value">${value}</td></tr>`;
+                            }
                         } else {
                             tableHtml += `<tr><td colspan="2" class="hud-full">${key}</td></tr>`;
                         }
                     });
-                    tableHtml += `</tbody></table>`;
+                    tableHtml += ``;
 
                     sectionsHtml += `
-                        <div class="hud-ui-section collapsed">
+                        <div class="hud-ui-section">
                             <div class="hud-ui-section-header">
                                 <span class="hud-section-title">${tagName}</span>
                                 <div class="hud-glow-line"></div>
@@ -152,19 +190,23 @@ function renderHUD() {
                             </div>
                             <div class="hud-ui-section-content">
                                 <div class="hud-ui-section-content-inner">
-                                    ${tableHtml}
+                                    <table class="hud-ui-table">
+                                        ${tableHtml}
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     `;
                 }
 
-                return `<div class="hud-ui-container">
-                    ${headerHtml ? `<div class="hud-ui-header-wrapper">${headerHtml}</div>` : ''}
-                    <div class="hud-ui-body">
-                        ${sectionsHtml}
+                return `
+                    <div class="hud-ui-container">
+                        ${headerHtml ? `<div class="hud-ui-header-wrapper">${headerHtml}</div>` : ''}
+                        <div class="hud-ui-body">
+                            ${sectionsHtml}
+                        </div>
                     </div>
-                </div>`;
+                `;
             });
         }
         
