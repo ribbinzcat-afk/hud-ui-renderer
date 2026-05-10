@@ -297,6 +297,113 @@ function renderHUD() {
             });
         }
 
+        // 6. ดักจับ [STATUS_CARD] สำหรับ Profile Card
+        // อัปเดต Regex ให้รองรับ :USER และ :CHAR
+        const cardRegex = /\[STATUS_CARD(?::(USER|CHAR))?\]([\s\S]*?)\[\/STATUS_CARD\]/g;
+
+        if (cardRegex.test(newHtml)) {
+            // แอบดึงรูป Avatar และชื่อจากกล่องข้อความแชทปัจจุบันเป็นค่าเริ่มต้น
+            const mesElement = $(this).closest('.mes');
+            const defaultAvatar = mesElement.find('.avatar img').attr('src') || '';
+            const defaultName = mesElement.attr('ch_name') || 'UNKNOWN';
+
+            // ดึงรูปและชื่อของผู้เล่น (User) จากข้อความล่าสุดของผู้เล่น
+            const userAvatar = $('.mes[is_user="true"]').last().find('.avatar img').attr('src') || defaultAvatar;
+            const userName = $('.mes[is_user="true"]').last().attr('ch_name') || 'User';
+
+            // ดึงรูปและชื่อของบอท (Character) จากข้อความล่าสุดของบอท
+            const charAvatar = $('.mes[is_user="false"]').last().find('.avatar img').attr('src') || defaultAvatar;
+            const charName = $('.mes[is_user="false"]').last().attr('ch_name') || 'Character';
+
+            newHtml = newHtml.replace(cardRegex, (match, targetType, innerText) => {
+                let cleanText = innerText.replace(/<[^>]*>/gi, '').replace(/\u200B/gi, '');
+
+                // กำหนดรูปและชื่อตามพารามิเตอร์ที่ระบุ
+                let cardAvatar = defaultAvatar;
+                let cardName = defaultName;
+
+                if (targetType === "USER") {
+                    cardAvatar = userAvatar;
+                    cardName = userName;
+                } else if (targetType === "CHAR") {
+                    cardAvatar = charAvatar;
+                    cardName = charName;
+                }
+
+                // ถ้ามีการระบุ [NAME] ทับไว้ข้างใน ให้ใช้ชื่อนั้นแทน
+                const nameMatch = cleanText.match(/\[NAME\]([\s\S]*?)\[\/NAME\]/);
+                if (nameMatch) {
+                    cardName = nameMatch[1].trim();
+                }
+
+                let statsHtml = '';
+                const statsMatch = cleanText.match(/\[STATS\]([\s\S]*?)\[\/STATS\]/);
+                if (statsMatch) {
+                    const statsContent = statsMatch[1].trim();
+                    const items = statsContent.split('|').map(item => item.trim()).filter(item => item.length > 0);
+
+                    items.forEach(item => {
+                        const parts = item.split(':');
+                        const key = parts[0] ? parts[0].trim() : '';
+                        const value = parts.slice(1).join(':').trim();
+
+                        if (value) {
+                            let isBar = false;
+                            let percent = 0;
+
+                            const fractionMatch = value.match(/^\s*(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)\s*$/);
+                            const percentMatch = value.match(/^\s*(\d+(?:\.\d+)?)\s*%\s*$/);
+
+                            if (fractionMatch) {
+                                const current = parseFloat(fractionMatch[1]);
+                                const max = parseFloat(fractionMatch[2]);
+                                if (max > 0) {
+                                    percent = Math.min(100, Math.max(0, (current / max) * 100));
+                                    isBar = true;
+                                }
+                            } else if (percentMatch) {
+                                percent = Math.min(100, Math.max(0, parseFloat(percentMatch[1])));
+                                isBar = true;
+                            }
+
+                            if (isBar) {
+                                statsHtml += `
+                                    <div class="hud-card-stat-bar">
+                                        <div class="hud-card-stat-header">
+                                            <span class="hud-card-stat-key">${key}</span>
+                                            <span class="hud-card-stat-value">${value}</span>
+                                        </div>
+                                        <div class="hud-bar-bg">
+                                            <div class="hud-bar-fill" style="width: ${percent}%;"></div>
+                                        </div>
+                                    </div>`;
+                            } else {
+                                statsHtml += `
+                                    <div class="hud-card-stat-text">
+                                        <span class="hud-card-stat-key">${key}:</span>
+                                        <span class="hud-card-stat-value">${value}</span>
+                                    </div>`;
+                            }
+                        }
+                    });
+                }
+
+                return `
+                    <div class="hud-card-container">
+                        <div class="hud-card-left">
+                            <div class="hud-card-avatar-wrapper">
+                                <img src="${cardAvatar}" class="hud-card-avatar" alt="Avatar">
+                            </div>
+                            <div class="hud-card-name">${cardName}</div>
+                        </div>
+                        <div class="hud-card-right">
+                            ${statsHtml}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
         if (html !== newHtml) {
             $(this).html(newHtml);
         }
