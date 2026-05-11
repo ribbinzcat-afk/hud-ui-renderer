@@ -404,36 +404,37 @@ function renderHUD() {
             });
         }
 
-        // NEW: 7. ดักจับ [ROLL_UI] สำหรับระบบทอยเต๋า
+        // 7. ดักจับ [ROLL_UI] สำหรับระบบทอยเต๋า
         if (newHtml.includes("[ROLL_UI]")) {
             const rollRegex = /\[ROLL_UI\]([\s\S]*?)\[\/ROLL_UI\]/g;
             newHtml = newHtml.replace(rollRegex, (match, innerText) => {
                 let cleanText = innerText.replace(/<[^>]*>/gi, '').replace(/\u200B/gi, '').trim();
 
                 let rollTitle = "ทอยลูกเต๋า";
-                let diceType = "d20"; // ค่าเริ่มต้นคือลูกเต๋า 20 หน้า
+                let diceType = "d20";
                 let diceSides = 20;
 
-                // แยกหัวข้อและประเภทเต๋าด้วยเครื่องหมาย |
                 const parts = cleanText.split('|');
                 if (parts.length > 0) {
                     rollTitle = parts[0].trim();
                 }
                 if (parts.length > 1) {
                     diceType = parts[1].trim().toLowerCase();
-                    // ดึงตัวเลขหลังตัว d (เช่น d20 -> 20, d6 -> 6)
                     const matchSides = diceType.match(/d(\d+)/);
                     if (matchSides) {
                         diceSides = parseInt(matchSides[1]);
                     }
                 }
 
-                // เก็บข้อมูลไว้ใน data attributes เพื่อใช้ตอนกดปุ่ม
+                // ป้องกันเครื่องหมายคำพูดทำโค้ดพัง
+                const safeTitle = rollTitle.split('"').join('&' + 'quot;').split("'").join('&' + '#39;');
+
+                // เปลี่ยนจาก <button> เป็น <div> เพื่อป้องกัน SillyTavern ลบทิ้ง
                 return `
                     <div class="hud-roll-container">
                         <div class="hud-roll-left">
                             <div class="hud-roll-icon-wrapper">
-                                <i class="fa-solid fa-dice-d20 hud-roll-icon"></i>
+                                🎲
                             </div>
                             <div class="hud-roll-info">
                                 <div class="hud-roll-title">${rollTitle}</div>
@@ -441,9 +442,9 @@ function renderHUD() {
                             </div>
                         </div>
                         <div class="hud-roll-right">
-                            <button class="hud-roll-btn" data-title="${rollTitle}" data-type="${diceType}" data-sides="${diceSides}">
+                            <div class="hud-roll-btn" data-title="${safeTitle}" data-type="${diceType}" data-sides="${diceSides}">
                                 ทอยลูกเต๋า
-                            </button>
+                            </div>
                         </div>
                     </div>
                 `;
