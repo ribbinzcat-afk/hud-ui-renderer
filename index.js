@@ -404,6 +404,52 @@ function renderHUD() {
             });
         }
 
+        // NEW: 7. ดักจับ [ROLL_UI] สำหรับระบบทอยเต๋า
+        if (newHtml.includes("[ROLL_UI]")) {
+            const rollRegex = /\[ROLL_UI\]([\s\S]*?)\[\/ROLL_UI\]/g;
+            newHtml = newHtml.replace(rollRegex, (match, innerText) => {
+                let cleanText = innerText.replace(/<[^>]*>/gi, '').replace(/\u200B/gi, '').trim();
+
+                let rollTitle = "ทอยลูกเต๋า";
+                let diceType = "d20"; // ค่าเริ่มต้นคือลูกเต๋า 20 หน้า
+                let diceSides = 20;
+
+                // แยกหัวข้อและประเภทเต๋าด้วยเครื่องหมาย |
+                const parts = cleanText.split('|');
+                if (parts.length > 0) {
+                    rollTitle = parts[0].trim();
+                }
+                if (parts.length > 1) {
+                    diceType = parts[1].trim().toLowerCase();
+                    // ดึงตัวเลขหลังตัว d (เช่น d20 -> 20, d6 -> 6)
+                    const matchSides = diceType.match(/d(\d+)/);
+                    if (matchSides) {
+                        diceSides = parseInt(matchSides[1]);
+                    }
+                }
+
+                // เก็บข้อมูลไว้ใน data attributes เพื่อใช้ตอนกดปุ่ม
+                return `
+                    <div class="hud-roll-container">
+                        <div class="hud-roll-left">
+                            <div class="hud-roll-icon-wrapper">
+                                <i class="fa-solid fa-dice-d20 hud-roll-icon"></i>
+                            </div>
+                            <div class="hud-roll-info">
+                                <div class="hud-roll-title">${rollTitle}</div>
+                                <div class="hud-roll-type">ประเภทเต๋า: <span class="hud-roll-highlight">${diceType.toUpperCase()}</span></div>
+                            </div>
+                        </div>
+                        <div class="hud-roll-right">
+                            <button class="hud-roll-btn" data-title="${rollTitle}" data-type="${diceType}" data-sides="${diceSides}">
+                                ทอยลูกเต๋า
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
         if (html !== newHtml) {
             $(this).html(newHtml);
         }
@@ -453,6 +499,45 @@ jQuery(async () => {
         // NEW: ผูกอีเวนต์สำหรับการคลิกเพื่อพับเก็บหมวดหมู่ (Collapse)
         $(document).on("click", ".hud-ui-section-header", function() {
             $(this).parent().toggleClass("collapsed");
+        });
+
+                // NEW: ผูกอีเวนต์เมื่อกดปุ่มทอยเต๋า
+        $(document).on("click", ".hud-roll-btn", function() {
+            const title = $(this).data("title");
+            const type = $(this).data("type");
+            const sides = parseInt($(this).data("sides")) || 20;
+
+            // สุ่มตัวเลขตั้งแต่ 1 ถึง sides
+            const result = Math.floor(Math.random() * sides) + 1;
+
+            // สร้างข้อความผลลัพธ์
+            const rollMessage = `*ผลการทอยเต๋า [${title}] (${type.toUpperCase()}): ได้ ${result}*`;
+
+            const textarea = $("#send_textarea");
+            let currentVal = textarea.val();
+
+            if (currentVal && !currentVal.endsWith(" ") && !currentVal.endsWith("\n")) {
+                currentVal += "\n";
+            }
+
+            // นำข้อความไปใส่ในช่องพิมพ์
+            textarea.val(currentVal + rollMessage + " ");
+            textarea.trigger("input");
+            textarea.focus();
+
+            // แสดงเอฟเฟกต์ปุ่ม
+            const originalText = $(this).text();
+            $(this).text(`ได้ ${result}!`).css({
+                "background": "rgba(var(--hud-accent-rgb), 0.4)",
+                "transform": "scale(0.95)"
+            });
+
+            setTimeout(() => {
+                $(this).text(originalText).css({
+                    "background": "",
+                    "transform": ""
+                });
+            }, 1500);
         });
 
         // เปลี่ยนมาใช้ scheduleRender แทน renderHUD โดยตรง
