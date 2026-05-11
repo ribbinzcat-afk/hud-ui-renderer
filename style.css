@@ -709,3 +709,110 @@
         width: 100%;
     }
 }
+
+/* --- ส่วน Dice Roll UI --- */
+.hud-roll-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(15, 25, 40, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(var(--hud-accent-rgb), 0.3);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-family: 'Prompt', sans-serif;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 0 10px rgba(var(--hud-accent-rgb), 0.05);
+    animation: hudFadeIn 0.4s ease forwards;
+}
+
+.hud-roll-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.hud-roll-icon-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(var(--hud-accent-rgb), 0.15);
+    border-radius: 8px;
+    color: var(--hud-accent);
+    font-size: 1.2em;
+    box-shadow: inset 0 0 8px rgba(var(--hud-accent-rgb), 0.2);
+    /* แอนิเมชันลูกเต๋าหมุนช้าๆ */
+    animation: rollDiceSpin 4s linear infinite;
+}
+
+@keyframes rollDiceSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.hud-roll-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.hud-roll-title {
+    font-weight: 600;
+    color: #e0f0ff;
+    font-size: 0.95em;
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
+}
+
+.hud-roll-type {
+    font-size: 0.8em;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.hud-roll-highlight {
+    color: var(--hud-accent);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.hud-roll-btn {
+    background: rgba(15, 25, 40, 0.6);
+    border: 1px solid rgba(var(--hud-accent-rgb), 0.6);
+    border-radius: 8px;
+    padding: 8px 16px;
+    color: var(--hud-accent);
+    font-family: 'Prompt', sans-serif;
+    font-size: 0.85em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.hud-roll-btn:hover {
+    background: rgba(var(--hud-accent-rgb), 0.2);
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(var(--hud-accent-rgb), 0.4);
+    transform: translateY(-2px);
+}
+
+.hud-roll-btn:active {
+    transform: translateY(1px);
+}
+
+/* Responsive สำหรับมือถือ */
+@media (max-width: 600px) {
+    .hud-roll-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    .hud-roll-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
