@@ -434,7 +434,7 @@ function renderHUD() {
                     <div class="hud-roll-container">
                         <div class="hud-roll-left">
                             <div class="hud-roll-icon-wrapper">
-                                🎲
+                               <i class="fa-solid fa-dice-d20 hud-roll-icon"></i>
                             </div>
                             <div class="hud-roll-info">
                                 <div class="hud-roll-title">${rollTitle}</div>
